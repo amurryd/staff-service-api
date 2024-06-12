@@ -1,19 +1,20 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('sqlite::memory:');
+const mongoose = require('mongoose');
 
-const Staff = sequelize.define('Staff', {
+const staffSchema = new mongoose.Schema({
   name: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   position: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   availability: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
+    type: Boolean,
+    default: true
   }
 });
+
+const Staff = mongoose.model('Staff', staffSchema);
 
 module.exports = Staff;

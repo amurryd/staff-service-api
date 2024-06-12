@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  staff-service:
+    build: ./staff-service
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/staff
+    depends_on:
+      - mongo
+  review-service:
+    build: ./review-service
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/reviews
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:

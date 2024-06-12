@@ -6,7 +6,8 @@ const router = express.Router();
 // Create a new staff member
 router.post('/staff', async (req, res) => {
   try {
-    const staff = await Staff.create(req.body);
+    const staff = new Staff(req.body);
+    await staff.save();
     res.status(201).json(staff);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -16,7 +17,7 @@ router.post('/staff', async (req, res) => {
 // Get all staff members
 router.get('/staff', async (req, res) => {
   try {
-    const staff = await Staff.findAll();
+    const staff = await Staff.find();
     res.status(200).json(staff);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +27,7 @@ router.get('/staff', async (req, res) => {
 // Get a single staff member by ID
 router.get('/staff/:id', async (req, res) => {
   try {
-    const staff = await Staff.findByPk(req.params.id);
+    const staff = await Staff.findById(req.params.id);
     if (staff) {
       res.status(200).json(staff);
     } else {
@@ -40,12 +41,9 @@ router.get('/staff/:id', async (req, res) => {
 // Update a staff member
 router.put('/staff/:id', async (req, res) => {
   try {
-    const [updated] = await Staff.update(req.body, {
-      where: { id: req.params.id }
-    });
-    if (updated) {
-      const updatedStaff = await Staff.findByPk(req.params.id);
-      res.status(200).json(updatedStaff);
+    const staff = await Staff.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (staff) {
+      res.status(200).json(staff);
     } else {
       res.status(404).json({ error: 'Staff not found' });
     }
@@ -57,10 +55,8 @@ router.put('/staff/:id', async (req, res) => {
 // Delete a staff member
 router.delete('/staff/:id', async (req, res) => {
   try {
-    const deleted = await Staff.destroy({
-      where: { id: req.params.id }
-    });
-    if (deleted) {
+    const staff = await Staff.findByIdAndDelete(req.params.id);
+    if (staff) {
       res.status(204).send();
     } else {
       res.status(404).json({ error: 'Staff not found' });
